@@ -20,6 +20,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+/* eslint "react/react-in-jsx-scope": "off" */
+
+/* globals React ReactDOM */
+
+/* eslint "react/jsx-no-undef": "off" */
 var HelloWorld = /*#__PURE__*/function (_React$Component) {
   _inherits(HelloWorld, _React$Component);
 

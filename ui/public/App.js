@@ -20,6 +20,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+/* eslint "react/react-in-jsx-scope": "off" */
+
+/* globals React ReactDOM */
+
+/* eslint "react/jsx-no-undef": "off" */
 var IssueFilter = /*#__PURE__*/function (_React$Component) {
   _inherits(IssueFilter, _React$Component);
 
@@ -91,8 +96,8 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
         due: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 10)
       };
       this.props.createIssue(issue);
-      form.owner.value = "";
-      form.title.value = "";
+      form.owner.value = '';
+      form.title.value = '';
     }
   }, {
     key: "render",
@@ -117,7 +122,7 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
 
 function graphQLFetch(query) {
   var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return fetch("/graphql", {
+  return fetch(window.ENV.UI_API_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -136,15 +141,15 @@ function graphQLFetch(query) {
 
       if (error.extension.code == 'BAD_USER_INPUT') {
         var details = error.extensions.exception.errors.join('\n ');
-        alert("".concat(error.message, ":\n ").concat(details));
+        alert("BAD ".concat(error.message, ":\n ").concat(details));
       } else {
-        alert("".concat(error.extensions.code, ": ").concat(error.message));
+        alert("NOT BAD ".concat(error.extensions.code, ": ").concat(error.message));
       }
     }
 
     return result.data;
   }).catch(function (e) {
-    return alert("Error in sending data to server: ".concat(e.message));
+    return alert("CATCH Error in sending data to server: ".concat(e.message));
   });
 }
 
@@ -214,4 +219,4 @@ var IssueList = /*#__PURE__*/function (_React$Component3) {
 }(React.Component);
 
 var element = /*#__PURE__*/React.createElement(IssueList, null);
-ReactDOM.render(element, document.getElementById("content"));
+ReactDOM.render(element, document.getElementById('content'));
