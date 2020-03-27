@@ -2,6 +2,7 @@
 /* globals React ReactDOM */
 /* eslint "react/jsx-no-undef": "off" */
 
+// eslint-disable-next-line react/prefer-stateless-function
 class HelloWorld extends React.Component {
   render() {
     const continents = ['Africa', 'America', 'Asia', 'Australia', 'Europa'];

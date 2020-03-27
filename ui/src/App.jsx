@@ -1,15 +1,32 @@
 /* eslint "react/react-in-jsx-scope": "off" */
 /* globals React ReactDOM */
 /* eslint "react/jsx-no-undef": "off" */
+/* eslint "no-alert": "off" */
+/* eslint "react/no-multi-comp": "off" */
 
+// eslint-disable-next-line react/prefer-stateless-function
 class IssueFilter extends React.Component {
   render() {
     return <div>This is a placeholder for the issue filter.</div>;
   }
 }
 
-function IssueTable(props) {
-  const issueRows = props.issues.map((issue) => (
+function IssueRow({ issue }) {
+  return (
+    <tr>
+      <td>{issue.id}</td>
+      <td>{issue.status}</td>
+      <td>{issue.owner}</td>
+      <td>{issue.created.toDateString()}</td>
+      <td>{issue.effort}</td>
+      <td>{issue.due ? issue.due.toDateString() : ' '}</td>
+      <td>{issue.title}</td>
+    </tr>
+  );
+}
+
+function IssueTable({ issue }) {
+  const issueRows = issues.map((issue) => (
     <IssueRow key={issue.id} issue={issue} />
   ));
 
@@ -38,21 +55,6 @@ function jsonDateReviver(key, value) {
   return value;
 }
 
-function IssueRow(props) {
-  const { issue } = props;
-
-  return (
-    <tr>
-      <td>{issue.id}</td>
-      <td>{issue.status}</td>
-      <td>{issue.owner}</td>
-      <td>{issue.created.toDateString()}</td>
-      <td>{issue.effort}</td>
-      <td>{issue.due ? issue.due.toDateString() : ' '}</td>
-      <td>{issue.title}</td>
-    </tr>
-  );
-}
 
 class IssueAdd extends React.Component {
   constructor() {
@@ -68,7 +70,8 @@ class IssueAdd extends React.Component {
       title: form.title.value,
       due: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 10),
     };
-    this.props.createIssue(issue);
+    const { createIssue } = this.props;
+    createIssue(issue);
     form.owner.value = '';
     form.title.value = '';
   }
@@ -78,7 +81,7 @@ class IssueAdd extends React.Component {
       <form name="issueAdd" onSubmit={this.handleSubmit}>
         <input type="text" name="owner" placeholder="Owner" />
         <input type="text" name="title" placeholder="Title" />
-        <button>Add</button>
+        <button type="submit">Add</button>
       </form>
     );
   }
@@ -96,16 +99,19 @@ function graphQLFetch(query, variables = {}) {
     .then((result) => {
       if (result.errors) {
         const error = result.errors[0];
-        if (error.extension.code == 'BAD_USER_INPUT') {
+        if (error.extension.code === 'BAD_USER_INPUT') {
           const details = error.extensions.exception.errors.join('\n ');
-          alert(`BAD ${error.message}:\n ${details}`);
+          alert(`${error.message}:\n ${details}`);
         } else {
-          alert(`NOT BAD ${error.extensions.code}: ${error.message}`);
+          alert(`${error.extensions.code}: ${error.message}`);
         }
       }
       return result.data;
     })
-    .catch((e) => alert(`CATCH Error in sending data to server: ${e.message}`));
+    .catch((e) => {
+      alert(`CATCH Error in sending data to server: ${e.message}`);
+      return null;
+    });
 }
 
 class IssueList extends React.Component {
@@ -149,12 +155,13 @@ class IssueList extends React.Component {
   }
 
   render() {
+    const { issues } = this.state;
     return (
       <>
         <h1>Issue Tracker</h1>
         <IssueFilter />
         <hr />
-        <IssueTable issues={this.state.issues} />
+        <IssueTable issues={issues} />
         <hr />
         <IssueAdd createIssue={this.createIssue} />
       </>

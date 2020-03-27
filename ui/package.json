@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -w uiserver.js -w .env uiserver.js",
+    "lint": "eslint . --ext js,jsx --ignore-pattern public",
     "compile": "babel src --out-dir public",
     "watch": "babel src --out-dir public --watch --verbose"
   },

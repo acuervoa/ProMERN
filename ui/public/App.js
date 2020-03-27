@@ -25,6 +25,11 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 /* globals React ReactDOM */
 
 /* eslint "react/jsx-no-undef": "off" */
+
+/* eslint "no-alert": "off" */
+
+/* eslint "react/no-multi-comp": "off" */
+// eslint-disable-next-line react/prefer-stateless-function
 var IssueFilter = /*#__PURE__*/function (_React$Component) {
   _inherits(IssueFilter, _React$Component);
 
@@ -46,8 +51,14 @@ var IssueFilter = /*#__PURE__*/function (_React$Component) {
   return IssueFilter;
 }(React.Component);
 
-function IssueTable(props) {
-  var issueRows = props.issues.map(function (issue) {
+function IssueRow(_ref) {
+  var issue = _ref.issue;
+  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, issue.id), /*#__PURE__*/React.createElement("td", null, issue.status), /*#__PURE__*/React.createElement("td", null, issue.owner), /*#__PURE__*/React.createElement("td", null, issue.created.toDateString()), /*#__PURE__*/React.createElement("td", null, issue.effort), /*#__PURE__*/React.createElement("td", null, issue.due ? issue.due.toDateString() : ' '), /*#__PURE__*/React.createElement("td", null, issue.title));
+}
+
+function IssueTable(_ref2) {
+  var issue = _ref2.issue;
+  var issueRows = issues.map(function (issue) {
     return /*#__PURE__*/React.createElement(IssueRow, {
       key: issue.id,
       issue: issue
@@ -63,11 +74,6 @@ var dateRegex = new RegExp('^\\d\\d\\d\\d-\\d\\d-\\d\\d');
 function jsonDateReviver(key, value) {
   if (dateRegex.test(value)) return new Date(value);
   return value;
-}
-
-function IssueRow(props) {
-  var issue = props.issue;
-  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, issue.id), /*#__PURE__*/React.createElement("td", null, issue.status), /*#__PURE__*/React.createElement("td", null, issue.owner), /*#__PURE__*/React.createElement("td", null, issue.created.toDateString()), /*#__PURE__*/React.createElement("td", null, issue.effort), /*#__PURE__*/React.createElement("td", null, issue.due ? issue.due.toDateString() : ' '), /*#__PURE__*/React.createElement("td", null, issue.title));
 }
 
 var IssueAdd = /*#__PURE__*/function (_React$Component2) {
@@ -95,7 +101,8 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
         title: form.title.value,
         due: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 10)
       };
-      this.props.createIssue(issue);
+      var createIssue = this.props.createIssue;
+      createIssue(issue);
       form.owner.value = '';
       form.title.value = '';
     }
@@ -113,7 +120,9 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
         type: "text",
         name: "title",
         placeholder: "Title"
-      }), /*#__PURE__*/React.createElement("button", null, "Add"));
+      }), /*#__PURE__*/React.createElement("button", {
+        type: "submit"
+      }, "Add"));
     }
   }]);
 
@@ -139,17 +148,18 @@ function graphQLFetch(query) {
     if (result.errors) {
       var error = result.errors[0];
 
-      if (error.extension.code == 'BAD_USER_INPUT') {
+      if (error.extension.code === 'BAD_USER_INPUT') {
         var details = error.extensions.exception.errors.join('\n ');
-        alert("BAD ".concat(error.message, ":\n ").concat(details));
+        alert("".concat(error.message, ":\n ").concat(details));
       } else {
-        alert("NOT BAD ".concat(error.extensions.code, ": ").concat(error.message));
+        alert("".concat(error.extensions.code, ": ").concat(error.message));
       }
     }
 
     return result.data;
   }).catch(function (e) {
-    return alert("CATCH Error in sending data to server: ".concat(e.message));
+    alert("CATCH Error in sending data to server: ".concat(e.message));
+    return null;
   });
 }
 
@@ -207,8 +217,9 @@ var IssueList = /*#__PURE__*/function (_React$Component3) {
   }, {
     key: "render",
     value: function render() {
+      var issues = this.state.issues;
       return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("h1", null, "Issue Tracker"), /*#__PURE__*/React.createElement(IssueFilter, null), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement(IssueTable, {
-        issues: this.state.issues
+        issues: issues
       }), /*#__PURE__*/React.createElement("hr", null), /*#__PURE__*/React.createElement(IssueAdd, {
         createIssue: this.createIssue
       }));

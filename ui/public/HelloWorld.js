@@ -25,6 +25,7 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 /* globals React ReactDOM */
 
 /* eslint "react/jsx-no-undef": "off" */
+// eslint-disable-next-line react/prefer-stateless-function
 var HelloWorld = /*#__PURE__*/function (_React$Component) {
   _inherits(HelloWorld, _React$Component);
 
