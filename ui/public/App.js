@@ -1,5 +1,13 @@
 "use strict";
 
+var _graphQLFetch = _interopRequireDefault(require("./graphQLFetch.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -20,15 +28,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-/* eslint "react/react-in-jsx-scope": "off" */
-
-/* globals React ReactDOM */
-
-/* eslint "react/jsx-no-undef": "off" */
-
-/* eslint "no-alert": "off" */
-
-/* eslint "react/no-multi-comp": "off" */
 // eslint-disable-next-line react/prefer-stateless-function
 var IssueFilter = /*#__PURE__*/function (_React$Component) {
   _inherits(IssueFilter, _React$Component);
@@ -53,11 +52,11 @@ var IssueFilter = /*#__PURE__*/function (_React$Component) {
 
 function IssueRow(_ref) {
   var issue = _ref.issue;
-  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, issue.id), /*#__PURE__*/React.createElement("td", null, issue.status), /*#__PURE__*/React.createElement("td", null, issue.owner), /*#__PURE__*/React.createElement("td", null, issue.created.toDateString()), /*#__PURE__*/React.createElement("td", null, issue.effort), /*#__PURE__*/React.createElement("td", null, issue.due ? issue.due.toDateString() : ' '), /*#__PURE__*/React.createElement("td", null, issue.title));
+  return /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", null, issue.id), /*#__PURE__*/React.createElement("td", null, issue.status), /*#__PURE__*/React.createElement("td", null, issue.owner), /*#__PURE__*/React.createElement("td", null, issue.created.toDateString()), /*#__PURE__*/React.createElement("td", null, issue.effort), /*#__PURE__*/React.createElement("td", null, issue.due ? issue.due.toDateString() : ""), /*#__PURE__*/React.createElement("td", null, issue.title));
 }
 
 function IssueTable(_ref2) {
-  var issue = _ref2.issue;
+  var issues = _ref2.issues;
   var issueRows = issues.map(function (issue) {
     return /*#__PURE__*/React.createElement(IssueRow, {
       key: issue.id,
@@ -67,13 +66,6 @@ function IssueTable(_ref2) {
   return /*#__PURE__*/React.createElement("table", {
     className: "bordered-table"
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "ID"), /*#__PURE__*/React.createElement("th", null, "Status"), /*#__PURE__*/React.createElement("th", null, "Owner"), /*#__PURE__*/React.createElement("th", null, "Created"), /*#__PURE__*/React.createElement("th", null, "Effort"), /*#__PURE__*/React.createElement("th", null, "Due Date"), /*#__PURE__*/React.createElement("th", null, "Title"))), /*#__PURE__*/React.createElement("tbody", null, issueRows));
-}
-
-var dateRegex = new RegExp('^\\d\\d\\d\\d-\\d\\d-\\d\\d');
-
-function jsonDateReviver(key, value) {
-  if (dateRegex.test(value)) return new Date(value);
-  return value;
 }
 
 var IssueAdd = /*#__PURE__*/function (_React$Component2) {
@@ -103,8 +95,8 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
       };
       var createIssue = this.props.createIssue;
       createIssue(issue);
-      form.owner.value = '';
-      form.title.value = '';
+      form.owner.value = "";
+      form.title.value = "";
     }
   }, {
     key: "render",
@@ -129,39 +121,9 @@ var IssueAdd = /*#__PURE__*/function (_React$Component2) {
   return IssueAdd;
 }(React.Component);
 
-function graphQLFetch(query) {
-  var variables = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  return fetch(window.ENV.UI_API_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      query,
-      variables
-    })
-  }).then(function (response) {
-    return response.text();
-  }).then(function (body) {
-    return JSON.parse(body, jsonDateReviver);
-  }).then(function (result) {
-    if (result.errors) {
-      var error = result.errors[0];
-
-      if (error.extension.code === 'BAD_USER_INPUT') {
-        var details = error.extensions.exception.errors.join('\n ');
-        alert("".concat(error.message, ":\n ").concat(details));
-      } else {
-        alert("".concat(error.extensions.code, ": ").concat(error.message));
-      }
-    }
-
-    return result.data;
-  }).catch(function (e) {
-    alert("CATCH Error in sending data to server: ".concat(e.message));
-    return null;
-  });
-}
+IssueAdd.propTypes = {
+  createIssue: PropTypes.func.isRequired
+};
 
 var IssueList = /*#__PURE__*/function (_React$Component3) {
   _inherits(IssueList, _React$Component3);
@@ -188,32 +150,76 @@ var IssueList = /*#__PURE__*/function (_React$Component3) {
     }
   }, {
     key: "loadData",
-    value: function loadData() {
-      var _this3 = this;
+    value: function () {
+      var _loadData = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var query, data;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                query = "query {\n      issueList {\n        id title status owner\n        created effort due\n      }\n    }";
+                _context.next = 3;
+                return (0, _graphQLFetch.default)(query);
 
-      var query = "query {\n        issueList {\n            id title status owner\n            created effort due\n        }\n    }";
-      graphQLFetch(query).then(function (data) {
-        if (data) {
-          _this3.setState({
-            issues: data.issueList
-          });
-        }
-      });
-    }
+              case 3:
+                data = _context.sent;
+
+                if (data) {
+                  this.setState({
+                    issues: data.issueList
+                  });
+                }
+
+              case 5:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function loadData() {
+        return _loadData.apply(this, arguments);
+      }
+
+      return loadData;
+    }()
   }, {
     key: "createIssue",
-    value: function createIssue(issue) {
-      var _this4 = this;
+    value: function () {
+      var _createIssue = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(issue) {
+        var query, data;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                query = "mutation issueAdd($issue: IssueInputs!) {\n      issueAdd(issue: $issue) {\n        id\n      }\n    }";
+                _context2.next = 3;
+                return (0, _graphQLFetch.default)(query, {
+                  issue
+                });
 
-      var query = "mutation issueAdd($issue: IssueInputs!) {\n          issueAdd(issue: $issue) {\n              id\n          }\n      }";
-      graphQLFetch(query, {
-        issue
-      }).then(function (data) {
-        if (data) {
-          _this4.loadData();
-        }
-      });
-    }
+              case 3:
+                data = _context2.sent;
+
+                if (data) {
+                  this.loadData();
+                }
+
+              case 5:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this);
+      }));
+
+      function createIssue(_x) {
+        return _createIssue.apply(this, arguments);
+      }
+
+      return createIssue;
+    }()
   }, {
     key: "render",
     value: function render() {
@@ -230,4 +236,4 @@ var IssueList = /*#__PURE__*/function (_React$Component3) {
 }(React.Component);
 
 var element = /*#__PURE__*/React.createElement(IssueList, null);
-ReactDOM.render(element, document.getElementById('content'));
+ReactDOM.render(element, document.getElementById("contents"));
